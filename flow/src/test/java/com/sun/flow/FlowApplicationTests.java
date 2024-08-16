@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 class FlowApplicationTests {
@@ -45,22 +47,32 @@ class FlowApplicationTests {
 
 
         Deployment deploy1 = repositoryService.createDeployment()
-                .addClasspathResource("process-01/FirstFlow.bpmn20.xml") // 部署一个流程
-                .name("第2个流程案例")
+                .addClasspathResource("process-01/Example02.bpmn20.xml") // 部署一个流程
+                .name("监听器")
                 .deploy();
         System.out.println(deploy1.getId());
     }
 
+    /**
+     * 启动一个流程
+     */
     @Test
     void startFlow() {
-        // act_re_procdef 表中的id
-        String processId = "FirstFlow:1:b9b7bb53-59ea-11ef-a650-38d57a108ea9";
+
+        // act_re_procdef 表中的id  还有key
+        String processId = "Example02:1:6b63dcbb-5ba6-11ef-aeb5-38d57a108ea9";
 
         String processKey = "FirstFlow";
 
-        runtimeService.startProcessInstanceById(processId);
-
+//        runtimeService.startProcessInstanceById(processId);
 //        runtimeService.startProcessInstanceByKey(processKey);
+
+        //在启动流程实例的时候 可以绑定对应的流程变量或者表达式的值
+        Map<String,Object> map = new HashMap<>();
+        map.put("myAsssign2","zhangsan");
+        runtimeService.startProcessInstanceById(processId,map);
+
+
 
     }
 
@@ -69,8 +81,9 @@ class FlowApplicationTests {
      */
     @Test
     void findFlow() {
+        //act_ru_task  这张表里去找
         List<Task> zhangsan = taskService.createTaskQuery()
-                .taskAssignee("zhangsan")
+                .taskAssignee("lisi")
                 .list();
         zhangsan.forEach(vo-> System.out.println(vo.getId()));
     }
@@ -80,8 +93,14 @@ class FlowApplicationTests {
      */
     @Test
     void completeTask(){
+        Map<String,Object> map= new HashMap<>();
+        map.put("myAssignee1","lisi"); // 绑定一个变量 动态传参审批人
+        // taskService.complete("3ce3c69e-5ba0-11ef-8ae0-38d57a108ea9",map);
+
+
+
         // 完成任务的审批 根据id
-        taskService.complete("7c443862-5b7d-11ef-bc18-38d57a108ea9"); //3f417a2c-5b7d-11ef-926c-38d57a108ea9
+        taskService.complete("52386c26-5ba7-11ef-963c-38d57a108ea9"); //myAssignee1 //3ce3c69e-5ba0-11ef-8ae0-38d57a108ea9
     }
 
     /**
