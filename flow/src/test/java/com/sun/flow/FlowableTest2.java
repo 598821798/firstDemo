@@ -1,9 +1,7 @@
 package com.sun.flow;
 
-import org.flowable.engine.ProcessEngine;
-import org.flowable.engine.RepositoryService;
-import org.flowable.engine.RuntimeService;
-import org.flowable.engine.TaskService;
+import org.flowable.engine.*;
+import org.flowable.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.task.api.Task;
@@ -16,8 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SpringBootTest
-class FlowApplicationTests {
+@SpringBootTest(classes = FlowApplication.class)
+public class FlowableTest2 {
     // 启动mysql  mysql -u root -p
 
     // flowable-ui  启动 tomcat startup.bat
@@ -47,8 +45,8 @@ class FlowApplicationTests {
 
 
         Deployment deploy1 = repositoryService.createDeployment()
-                .addClasspathResource("process-01/Example02.bpmn20.xml") // 部署一个流程
-                .name("监听器")
+                .addClasspathResource("process-01/FirstFlow.bpmn20.xml") // 部署一个流程
+                .name("流程变量案例")
                 .deploy();
         System.out.println(deploy1.getId());
     }
@@ -60,22 +58,46 @@ class FlowApplicationTests {
     void startFlow() {
 
         // act_re_procdef 表中的id  还有key
-        String processId = "Example02:2:0dedd371-5dd2-11ef-bb2d-38d57a108ea9";
-//Example02:2:0dedd371-5dd2-11ef-bb2d-38d57a108ea9
-        String processKey = "FirstFlow";
-
-//        runtimeService.startProcessInstanceById(processId);
-//        runtimeService.startProcessInstanceByKey(processKey);
+        String processId = "FirstFlow:1:1855f182-5dd4-11ef-b072-38d57a108ea9";
 
         //在启动流程实例的时候 可以绑定对应的流程变量或者表达式的值
         Map<String,Object> map = new HashMap<>();
-        map.put("myAsssign2","zhangsan");
+        map.put("var1","test1");
+        map.put("var2","test2");
+        map.put("var3","test3");
         runtimeService.startProcessInstanceById(processId,map);
-
-
 
     }
 
+    /**
+     * 赋值
+     */
+    @Test
+    void  setVariable(){
+        String id = "7cf9a4a0-5dd4-11ef-a507-38d57a108ea9";
+        runtimeService.setVariable(id,"var4","test4");
+
+        runtimeService.setVariableLocal(id,"local","localTest1");
+
+
+        String taskID= "7cfc63c8-5dd4-11ef-a507-38d57a108ea9";
+        taskService.setVariable(taskID,"taskVar","var1");
+        taskService.setVariableLocal(taskID,"taskVarLocal","var1Local");  //是和taskid绑定的 是局部变量 任务当前节点有关
+    }
+    /**
+     * 获取定义的变量
+     */
+    @Test
+    void getVariables(){
+        String executionId = "7cf9a4a0-5dd4-11ef-a507-38d57a108ea9";
+        Map<String, Object> variables = runtimeService.getVariables(executionId);
+        System.out.println(variables+"//////////");
+
+        String taskID= "52b5a8bb-5e0c-11ef-a6e0-38d57a108ea9";
+        Map<String, Object> variables1 = taskService.getVariables(taskID);
+        System.out.println(variables1+"~~~~~~~~");
+
+    }
     /**
      * 根据用户查询信息
      */
@@ -94,13 +116,13 @@ class FlowApplicationTests {
     @Test
     void completeTask(){
         Map<String,Object> map= new HashMap<>();
-        map.put("myAssignee1","lisi"); // 绑定一个变量 动态传参审批人
+        map.put("taskVar1com","var1"); // 绑定一个变量 动态传参审批人
         // taskService.complete("3ce3c69e-5ba0-11ef-8ae0-38d57a108ea9",map);
 
 
 
         // 完成任务的审批 根据id
-        taskService.complete("54979451-5dd2-11ef-9e86-38d57a108ea9"); //myAssignee1 //3ce3c69e-5ba0-11ef-8ae0-38d57a108ea9
+        taskService.complete("52b5a8bb-5e0c-11ef-a6e0-38d57a108ea9",map); //myAssignee1 //3ce3c69e-5ba0-11ef-8ae0-38d57a108ea9
     }
 
     /**

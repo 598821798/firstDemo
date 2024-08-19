@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef" exporter="Flowable Open Source Modeler" exporterVersion="6.7.2">
+  <process id="HolidayDemo2" name="HolidayDemo2" isExecutable="true">
+    <documentation>候选人</documentation>
+    <startEvent id="startEvent1" flowable:formFieldValidation="true"></startEvent>
+    <userTask id="sid-54379FC6-08B1-4B24-A537-AB5ADA0C99AF" name="人事审批" flowable:candidateUsers="${candidate1},${candidate2},${candidate3}" flowable:formFieldValidation="true"></userTask>
+    <sequenceFlow id="sid-366F0F82-2EF9-4026-95C6-7979DC3D2BB5" sourceRef="startEvent1" targetRef="sid-54379FC6-08B1-4B24-A537-AB5ADA0C99AF"></sequenceFlow>
+    <userTask id="sid-16C7781A-10B5-4973-AE55-36680E707998" name="经理审批" flowable:candidateUsers="${candidate10},${candidate11}" flowable:formFieldValidation="true"></userTask>
+    <sequenceFlow id="sid-1BCDAB86-D2AF-4D96-B568-E143D737F992" sourceRef="sid-54379FC6-08B1-4B24-A537-AB5ADA0C99AF" targetRef="sid-16C7781A-10B5-4973-AE55-36680E707998"></sequenceFlow>
+    <endEvent id="sid-92724F0E-EBAB-454D-A622-785B7944E469"></endEvent>
+    <sequenceFlow id="sid-9F63A23A-DE95-42D1-AD90-5F300FFF956B" sourceRef="sid-16C7781A-10B5-4973-AE55-36680E707998" targetRef="sid-92724F0E-EBAB-454D-A622-785B7944E469"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_HolidayDemo2">
+    <bpmndi:BPMNPlane bpmnElement="HolidayDemo2" id="BPMNPlane_HolidayDemo2">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="90.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-54379FC6-08B1-4B24-A537-AB5ADA0C99AF" id="BPMNShape_sid-54379FC6-08B1-4B24-A537-AB5ADA0C99AF">
+        <omgdc:Bounds height="80.0" width="100.0" x="240.0" y="125.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-16C7781A-10B5-4973-AE55-36680E707998" id="BPMNShape_sid-16C7781A-10B5-4973-AE55-36680E707998">
+        <omgdc:Bounds height="80.0" width="100.0" x="465.0" y="125.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-92724F0E-EBAB-454D-A622-785B7944E469" id="BPMNShape_sid-92724F0E-EBAB-454D-A622-785B7944E469">
+        <omgdc:Bounds height="28.0" width="28.0" x="645.0" y="151.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-366F0F82-2EF9-4026-95C6-7979DC3D2BB5" id="BPMNEdge_sid-366F0F82-2EF9-4026-95C6-7979DC3D2BB5" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="119.94999946593475" y="165.0"></omgdi:waypoint>
+        <omgdi:waypoint x="240.0" y="165.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1BCDAB86-D2AF-4D96-B568-E143D737F992" id="BPMNEdge_sid-1BCDAB86-D2AF-4D96-B568-E143D737F992" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="339.94999999983776" y="165.0"></omgdi:waypoint>
+        <omgdi:waypoint x="465.0" y="165.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9F63A23A-DE95-42D1-AD90-5F300FFF956B" id="BPMNEdge_sid-9F63A23A-DE95-42D1-AD90-5F300FFF956B" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="564.9499999999827" y="165.0"></omgdi:waypoint>
+        <omgdi:waypoint x="645.0" y="165.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

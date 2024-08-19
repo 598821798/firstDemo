@@ -11,7 +11,7 @@
     <sequenceFlow id="sid-E62DBBDF-7E57-4DB4-BDC6-3A6DFF1D7D78" sourceRef="startEvent1" targetRef="sid-910835BA-597C-422C-B444-5AA6A3B2D5D9"></sequenceFlow>
     <userTask id="sid-F064CE96-C1B4-49C5-9518-92E0CCC85A43" name="审批用户2" flowable:formFieldValidation="true">
       <extensionElements>
-        <flowable:taskListener event="create" class="com/sun/flow/listener/MyListener01"></flowable:taskListener>
+        <flowable:taskListener event="create" class="com.sun.flow.listener.MyListener01"></flowable:taskListener>
       </extensionElements>
     </userTask>
     <sequenceFlow id="sid-80545368-7803-4787-B189-B8A564ABD501" sourceRef="sid-910835BA-597C-422C-B444-5AA6A3B2D5D9" targetRef="sid-F064CE96-C1B4-49C5-9518-92E0CCC85A43"></sequenceFlow>
