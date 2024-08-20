@@ -104,7 +104,9 @@ public class FlowableTest3 {
 
     /**
      * 根据登录的用户查询对应的可以拾取的任务
-     *
+     * 候选人不是审批人  需要通过拾取操作 把候选人变为审批人
+     * 多个候选人只有一个可以变成审批人
+     * 审批人不想审批了 可以归还 从审批人变成-----> 候选人
      */
     @Test
     void findFlow() {
@@ -121,19 +123,75 @@ public class FlowableTest3 {
         zhangsan1.forEach(vo-> System.out.println(vo.getId()+"~~~~"));
     }
 
+
+    /**
+     * 指派任务
+     */
+    @Test
+    void setAssigneeTask() {
+
+        List<Task> list = taskService.createTaskQuery()
+                .taskAssignee("zhaoliu") //根据候选人查询任务
+                .list();
+
+        list.forEach(vo->
+                // 归还任务 指派他人
+                taskService.setAssignee(vo.getId(),"wangqi"));
+    }
+
+
+
+
+
+    /**
+     * 拾取任务
+     */
+    @Test
+    void claimTask() {
+
+        List<Task> list = taskService.createTaskQuery()
+                .taskCandidateUser("zhaoliu") //根据候选人查询任务
+                .list();
+
+        list.forEach(vo->
+
+              taskService.claim(vo.getId(),"zhaoliu"));
+    }
+
+    /**
+     * 归还任务
+     */
+    @Test
+    void unClaimTask() {
+
+        List<Task> list = taskService.createTaskQuery()
+                .taskAssignee("zhaoliu") //根据候选人查询任务
+                .list();
+
+        list.forEach(vo->
+            // 归还操作
+                taskService.unclaim(vo.getId()));
+    }
+
+
+
     /**
      * 任务审批
      */
     @Test
     void completeTask(){
-        Map<String,Object> map= new HashMap<>();
-        map.put("taskVar1com","var1"); // 绑定一个变量 动态传参审批人
-        // taskService.complete("3ce3c69e-5ba0-11ef-8ae0-38d57a108ea9",map);
 
-
-
-        // 完成任务的审批 根据id
-        taskService.complete("52b5a8bb-5e0c-11ef-a6e0-38d57a108ea9",map); //myAssignee1 //3ce3c69e-5ba0-11ef-8ae0-38d57a108ea9
+        List<Task> list = taskService.createTaskQuery()
+                .taskAssignee("zhangsan") //根据候选人查询任务
+                .list();
+        Map<String, Object> map = new HashMap<>();
+        map.put("candidate10", "zhaoliu");
+        map.put("candidate11", "wangqi");
+        list.forEach(task -> {
+            System.out.println(task.getId() + "11111111111111111");
+            taskService.complete(task.getId(), map);
+        });
+//        taskService.complete("eb9be508-5ea2-11ef-97f8-38d57a108ea9");
     }
 
     /**
