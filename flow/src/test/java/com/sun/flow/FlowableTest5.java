@@ -1,12 +1,11 @@
 package com.sun.flow;
 
-import org.flowable.engine.ProcessEngine;
-import org.flowable.engine.RepositoryService;
-import org.flowable.engine.RuntimeService;
-import org.flowable.engine.TaskService;
+import org.flowable.engine.*;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.idm.api.Group;
+import org.flowable.idm.api.User;
 import org.flowable.task.api.Task;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +17,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *  候选人
+ * 排他网关
  */
 @SpringBootTest(classes = FlowApplication.class)
-public class FlowableTest3 {
+public class FlowableTest5 {
     // 启动mysql  mysql -u root -p
 
     // flowable-ui  启动 tomcat startup.bat
@@ -38,6 +37,63 @@ public class FlowableTest3 {
     @Autowired
     private TaskService taskService;         //任务服务
 
+    @Autowired
+    private IdentityService identityService;
+    /**
+     * 维护用户
+     */
+    @Test
+    void createUser() {
+        User user = identityService.newUser("lisi");
+        user.setEmail("lisi@qq.com");
+        user.setFirstName("li");
+        user.setLastName("si");
+        user.setPassword("1234");
+        identityService.saveUser(user);
+    }
+
+
+
+    /**
+     * 用户组的维护
+     */
+    @Test
+    void createGroup() {
+        Group group = identityService.newGroup("销售部");
+        group.setName("销售部");
+        group.setType("type1");
+        identityService.saveGroup(group);
+
+        Group group1 = identityService.newGroup("行政部");
+        group.setName("行政部");
+        group.setType("type2");
+        identityService.saveGroup(group1);
+
+    }
+
+
+    /**
+     * 用户组和用户的维护
+     */
+    @Test
+    void createGroupAndUser() {
+        //查询对应的用户组
+        Group xsb = identityService.createGroupQuery().groupId("销售部").singleResult();
+        List<User> list = identityService.createUserQuery().list();
+        list.forEach((User user) -> {
+            identityService.createMembership(user.getId(),xsb.getId());
+        });
+
+    }
+
+
+
+
+
+
+
+
+
     /**
      * 流程部署
      */
@@ -51,10 +107,15 @@ public class FlowableTest3 {
 
 
         Deployment deploy1 = repositoryService.createDeployment()
-                .addClasspathResource("process-01/HolidayDemo2.bpmn20.xml") // 部署一个流程
-                .name("候选人案例")
+                .addClasspathResource("process-01/HolidayDemo4.bpmn20.xml") // 部署一个流程
+                .name("排他网关")
                 .deploy();
         System.out.println(deploy1.getId());
+    }
+
+    @Test
+    void  deleteDeployFlow(){
+        repositoryService.deleteDeployment("f70ddbf4-5eca-11ef-b7d3-38d57a108ea9",true);
     }
 
     /**
@@ -64,31 +125,27 @@ public class FlowableTest3 {
     void startFlow() {
 
         // act_re_procdef 表中的id  还有key
-        String processId = "HolidayDemo2:1:11b4b314-5e0f-11ef-a10f-38d57a108ea9";
+        String processId = "HolidayDemo4:1:cadae925-5ecf-11ef-b31f-38d57a108ea9";
 
         //在启动流程实例的时候 可以绑定对应的流程变量或者表达式的值
-        Map<String,Object> map = new HashMap<>();
-        map.put("candidate1","zhangsan");
-        map.put("candidate2","lisi");
-        map.put("candidate3","wangwu");
-        ProcessInstance processInstance = runtimeService.startProcessInstanceById(processId,map);
+//        Map<String,Object> map = new HashMap<>();
+//        map.put("candidate1","zhangsan");
+//        map.put("candidate2","lisi");
+//        map.put("candidate3","wangwu");
+        ProcessInstance processInstance = runtimeService.startProcessInstanceById(processId);
 
     }
 
     /**
-     * 赋值
+     *  候选人任务的查询
      */
     @Test
-    void  setVariable(){
-        String id = "7cf9a4a0-5dd4-11ef-a507-38d57a108ea9";
-        runtimeService.setVariable(id,"var4","test4");
-
-        runtimeService.setVariableLocal(id,"local","localTest1");
-
-
-        String taskID= "7cfc63c8-5dd4-11ef-a507-38d57a108ea9";
-        taskService.setVariable(taskID,"taskVar","var1");
-        taskService.setVariableLocal(taskID,"taskVarLocal","var1Local");  //是和taskid绑定的 是局部变量 任务当前节点有关
+    void  findCandidateTask(){
+        Group group = identityService.createGroupQuery().groupMember("zhangsan").singleResult();
+        List<Task> tasks = taskService.createTaskQuery().taskCandidateGroup(group.getId()).list();
+        for (Task task : tasks) {
+            taskService.claim(task.getId(),"zhangsan");
+        }
     }
     /**
      * 获取定义的变量
@@ -184,17 +241,23 @@ public class FlowableTest3 {
     @Test
     void completeTask(){
 
-        List<Task> list = taskService.createTaskQuery()
-                .taskAssignee("zhangsan") //根据候选人查询任务
-                .list();
+//        List<Task> list = taskService.createTaskQuery()
+//                .taskAssignee("zhangsan") //根据候选人查询任务
+//                .list();
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("candidate10", "zhaoliu");
+//        map.put("candidate11", "wangqi");
+//        list.forEach(task -> {
+//            System.out.println(task.getId() + "11111111111111111");
+//            taskService.complete(task.getId(), map);
+//        });
+        String taskId= "5af2e124-5ed0-11ef-9dff-38d57a108ea9";
+
+        // 绑定请假的天数
         Map<String, Object> map = new HashMap<>();
-        map.put("candidate10", "zhaoliu");
-        map.put("candidate11", "wangqi");
-        list.forEach(task -> {
-            System.out.println(task.getId() + "11111111111111111");
-            taskService.complete(task.getId(), map);
-        });
-//        taskService.complete("eb9be508-5ea2-11ef-97f8-38d57a108ea9");
+        map.put("num", 5);
+
+        taskService.complete(taskId,map);
     }
 
     /**

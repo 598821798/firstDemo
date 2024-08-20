@@ -14,6 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 流程变量
+ */
 @SpringBootTest(classes = FlowApplication.class)
 public class FlowableTest2 {
     // 启动mysql  mysql -u root -p
